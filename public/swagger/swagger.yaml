@@ -1,0 +1,812 @@
+openapi: 3.0.0
+info:
+  title: Разработка API в Laravel 11
+  description: API для управления пользователями, компаниями и комментариями
+  version: 1.0.0
+servers:
+  - url: /api
+paths:
+  /users:
+    post:
+      summary: Создание нового пользователя
+      description: создает нового пользователя.
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - first_name
+                - last_name
+                - phone
+              properties:
+                first_name:
+                  type: string
+                  minLength: 3
+                  maxLength: 40
+                  example: "Ivan"
+                  description: "Имя пользователя (обязательно)"
+                last_name:
+                  type: string
+                  minLength: 3
+                  maxLength: 40
+                  example: "Ivanov"
+                  description: "Фамилия пользователя (обязательно)"
+                phone:
+                  type: string
+                  pattern: "^\\+7\\d{10}$"
+                  example: "+79990851123"
+                  description: "Телефон пользователя в формате +7XXXXXXXXXX (обязательно, уникально)"
+                avatar:
+                  type: string
+                  example: ""
+                  nullable: true
+                  description: "Аватар пользователя (не обязательно, изображение, max: 2MB, форматы: jpeg, png, jpg)"
+      responses:
+        '201':
+          description: Пользователь успешно создан
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '422':
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Validation error"
+                  errors:
+                    type: object
+                    properties:
+                      first_name:
+                        type: array
+                        items:
+                          type: string
+                          example: "The first_name must be at least 3 characters."
+                      last_name:
+                        type: array
+                        items:
+                          type: string
+                          example: "The last_name must be at least 3 characters."
+                      phone:
+                        type: array
+                        items:
+                          type: string
+                          example: "The phone has already been taken."
+                      avatar:
+                        type: array
+                        items:
+                          type: string
+                          example: "The avatar must be an image."
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+  /users/{id}:
+    get:
+      summary: Получение данных пользователя
+      description: Возвращает данные пользователя по ID.
+      operationId: getUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор пользователя
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  first_name:
+                    type: string
+                    example: "Ivan"
+                  last_name:
+                    type: string
+                    example: "Ivanov"
+                  phone:
+                    type: string
+                    example: "+79990851123"
+                  avatar:
+                    type: string
+                    example: null
+                  created_at:
+                    type: string
+                    format: date-time
+                    example: "2025-01-30 07:18:24"
+                  updated_at:
+                    type: string
+                    format: date-time
+                    example: "2025-01-30 07:18:24"
+        '404':
+          description: Пользователь не найден
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "User not found"
+    put:
+      summary: Обновление данных пользователя
+      description: Обновляет данные пользователя по ID.
+      operationId: updateUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор пользователя
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                first_name:
+                  type: string
+                  minLength: 3
+                  maxLength: 40
+                  example: "Ivan"
+                  description: "Имя пользователя"
+                last_name:
+                  type: string
+                  minLength: 3
+                  maxLength: 40
+                  example: "Ivanov"
+                  description: "Фамилия пользователя"
+                phone:
+                  type: string
+                  pattern: "^\\+7\\d{10}$"
+                  example: "+79990851123"
+                  description: "Телефон пользователя в формате +7XXXXXXXXXX"
+                avatar:
+                  type: string
+                  example: ""
+                  nullable: true
+                  description: "Аватар пользователя (не обязательно, изображение, max: 2MB, форматы: jpeg, png, jpg)"
+      responses:
+        '200':
+          description: Пользователь успешно обновлён
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '404':
+          description: Пользователь не найден
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "User not found"
+    delete:
+      summary: Удаление пользователя
+      description: Удаляет пользователя по ID.
+      operationId: deleteUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор пользователя
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Пользователь успешно удалён
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '404':
+          description: Пользователь не найден
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "User not found"
+  /companies:
+    post:
+      summary: Создание компании
+      description: Создает новую компанию.
+      operationId: createCompany
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 3
+                  example: "Tech Solutions"
+                  description: Название компании (не менее 3 символов)
+                description:
+                  type: string
+                  minLength: 150
+                  example: "Tech Solutions is a leading provider of software solutions for businesses around the world."
+                  description: Описание компании (не менее 150 символов)
+              required:
+                - name
+                - description
+      responses:
+        '200':
+          description: Успешное создание компании
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '400':
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "The name field must be at least 3 characters. (and 1 more error)"
+                  errors:
+                    type: object
+                    properties:
+                      name:
+                        type: array
+                        items:
+                          type: string
+                          example: "The name field must be at least 3 characters."
+                      description:
+                        type: array
+                        items:
+                          type: string
+                          example: "The description field must be at least 150 characters."
+        '401':
+          description: Ошибка авторизации
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+  /companies/{id}:
+    get:
+      summary: Получение данных компании
+      description: Возвращает данные компании по ID.
+      operationId: getCompany
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор компании
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  name:
+                    type: string
+                    example: "Tech Solutions"
+                  description:
+                    type: string
+                    example: "Tech Solutions is a leading provider of software solutions for businesses around the world."
+                  logo:
+                    type: string
+                    example: null
+                  created_at:
+                    type: string
+                    format: date-time
+                    example: "2025-01-30 07:18:24"
+                  updated_at:
+                    type: string
+                    format: date-time
+                    example: "2025-01-30 07:18:24"
+
+        '404':
+          description: Компания не найдена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Company not found"
+    put:
+      summary: Обновление данных компании
+      description: Обновляет данные компании по ID.
+      operationId: updateCompany
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор компании
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Updated Tech Solutions"
+                description:
+                  type: string
+                  example: "Updated description for Tech Solutions."
+      responses:
+        '200':
+          description: Компания успешно обновлена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '404':
+          description: Компания не найдена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Company not found"
+    delete:
+      summary: Удаление компании
+      description: Удаляет компанию по ID.
+      operationId: deleteCompany
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор компании
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Компания успешно удалена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        '404':
+          description: Компания не найдена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Company not found"
+  /companies/rating/top:
+    get:
+      summary: Получить список топ-10 компаний по рейтингу.
+      description: Возвращает 10 компаний с наибольшим рейтингом.
+      responses:
+        '200':
+          description: Список компаний.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    name:
+                      type: string
+                      example: "TechCorp"
+                    description:
+                      type: string
+                      example: "Компания, специализирующаяся на технологиях."
+                    logo:
+                      type: string
+                      example: null
+                    created_at:
+                      type: string
+                      format: date-time
+                      example: "2025-01-30 07:18:24"
+                    updated_at:
+                      type: string
+                      format: date-time
+                      example: "2025-01-30 07:18:24"
+                    rating:
+                      type: number
+                      example: 9.8
+  /companies/rating/{id}:
+    get:
+      summary: Получение рейтинга компании
+      description: Возвращает рейтинг конкретной компании.
+      operationId: getCompanyRating
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор компании
+          schema:
+            type: integer
+            example: 1
+      responses:
+        '200':
+          description: Успешный ответ
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rating:
+                    type: number
+                    format: float
+                    example: 9.8
+        '404':
+          description: Компания не найдена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Company not found"
+  /comments:
+    post:
+      summary: Создать комментарий
+      description: Создает новый комментарий.
+      operationId: createComment
+      requestBody:
+        description: Данные комментария
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                commentable_id:
+                  type: integer
+                  example: 1
+                commentable_type:
+                  type: string
+                  enum:
+                    - User
+                    - Company
+                  example: Company
+                content:
+                  type: string
+                  minLength: 150
+                  maxLength: 400
+                  example: "This is a great comment about the company."
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 10
+                  example: 8
+      responses:
+        201:
+          description: Комментарий успешно создан
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        400:
+          description: Ошибка при создании комментария
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+        422:
+          description: Ошибка валидации данных
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "The selected commentable type is invalid. (and 1 more error)"
+                  errors:
+                    type: object
+                    properties:
+                      commentable_type:
+                        type: array
+                        items:
+                          type: string
+                          example: "The selected commentable type is invalid."
+                      content:
+                        type: array
+                        items:
+                          type: string
+                          example: "The selected commentable type is invalid."
+
+  /comments/{id}:
+    get:
+      summary: Получить комментарий по ID
+      description: Возвращает данные комментария по ID.
+      operationId: getCommentById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID комментария
+          schema:
+            type: integer
+            example: 1
+      responses:
+        200:
+          description: Комментарий найден
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  commentable_type:
+                    type: string
+                    example: Company
+                  commentable_id:
+                    type: integer
+                    example: 1
+                  content:
+                    type: string
+                    example: "This is a great comment about the company."
+                  rating:
+                    type: integer
+                    example: 8
+                  created_at:
+                    type: string
+                    format: date-time
+                    example: "2025-01-30 07:18:24"
+                  updated_at:
+                    type: string
+                    format: date-time
+                    example: "2025-01-30 07:18:24"
+        404:
+          description: Комментарий не найден
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Comment not found"
+
+    put:
+      summary: Обновить комментарий
+      description: Обновляет данные комментария по ID.
+      operationId: updateComment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID комментария
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        description: Данные для обновления комментария
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                commentable_id:
+                  type: integer
+                  example: 1
+                commentable_type:
+                  type: string
+                  enum:
+                    - User
+                    - Company
+                  example: User
+                content:
+                  type: string
+                  minLength: 150
+                  maxLength: 400
+                  example: "This is an updated comment about the user."
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 10
+                  example: 9
+      responses:
+        200:
+          description: Комментарий обновлен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        404:
+          description: Комментарий не найден
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Comment not found"
+        422:
+          description: Ошибка валидации данных
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "The content field must be at least 150 characters."
+                  errors:
+                    type: object
+                    properties:
+                      content:
+                        type: array
+                        items:
+                          type: string
+                          example: "The content field must be at least 150 characters."
+
+    delete:
+      summary: Удалить комментарий
+      description: Удаляет комментарий по ID.
+      operationId: deleteComment
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID комментария
+          schema:
+            type: integer
+            example: 1
+      responses:
+        200:
+          description: Комментарий удален
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        404:
+          description: Комментарий не найден
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Comment not found"
+
+  /comments/company/{id}:
+    get:
+      summary: Получить комментарии по ID компании
+      description: Возвращает список комментариев компании по ID.
+      operationId: getCommentsByCompany
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID компании
+          schema:
+            type: integer
+            example: 1
+      responses:
+        200:
+          description: Список комментариев найден
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      example: 1
+                    commentable_id:
+                      type: integer
+                      example: 1
+                    commentable_type:
+                      type: string
+                      example: Company
+                    content:
+                      type: string
+                      example: "Great service and products."
+                    rating:
+                      type: integer
+                      example: 9
+        404:
+          description: Комментарии не найдены
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Comments not found"
