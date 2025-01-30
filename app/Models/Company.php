@@ -13,7 +13,12 @@ class Company extends Model
       'logo',
     ];
 
-    public function comments()
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
+    ];
+
+    public function comments(): MorphMany
     {
         return $this->morphMany(Comment::class, 'commentable');
     }
