@@ -1,4 +1,4 @@
-IMAGE = shop-task
+IMAGE = task
 VERSION = 1.0
 WORK_DIR = /var/www
 
@@ -61,6 +61,3 @@ npm-dev:
 # Пример: make npm-run cmd='npm install -D tailwindcss'
 npm-run:
 	@docker run -it --rm -v $$(pwd):/app -w /app --user 1000:1000 node:22.11 $(cmd)
-
-phpcs:
-	@docker run --rm -v .:/tools/app ghcr.io/aleksandrtm/php-tools phpcs
