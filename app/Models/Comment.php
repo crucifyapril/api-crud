@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Comment extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'commentable_id',
         'commentable_type',
