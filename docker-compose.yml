@@ -24,15 +24,6 @@ services:
         networks:
             - web-network-task
 
-    redis-task:
-        container_name: redis-task
-        image: redis:7.4.0-alpine
-        restart: no
-        ports:
-            - "6379:6379"
-        networks:
-            - web-network-task
-
     db-task:
         container_name: db-task
         image: mysql:8.4.3
