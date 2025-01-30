@@ -30,8 +30,8 @@ class UserController extends Controller
     {
         try {
             $this->userService->updateUser($id, $request->userFormDto());
-        } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], Response::HTTP_NOT_FOUND);
+        } catch (Exception) {
+            return response()->json(['error' => 'User not found'], Response::HTTP_NOT_FOUND);
         }
 
         return response()->json(['success' => true]);
@@ -41,8 +41,8 @@ class UserController extends Controller
     {
         try {
             $this->userService->deleteUser($id);
-        } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], Response::HTTP_NOT_FOUND);
+        } catch (Exception) {
+            return response()->json(['error' => 'User not found'], Response::HTTP_NOT_FOUND);
         }
 
         return response()->json(['success' => true]);
@@ -52,9 +52,9 @@ class UserController extends Controller
     {
         try {
             $user = $this->userService->getUser($id);
-            return response()->json($user);
-        } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], Response::HTTP_NOT_FOUND);
+        } catch (Exception) {
+            return response()->json(['error' => 'User not found'], Response::HTTP_NOT_FOUND);
         }
+        return response()->json($user);
     }
 }

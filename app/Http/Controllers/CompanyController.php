@@ -30,8 +30,8 @@ class CompanyController extends Controller
     {
         try {
             $this->companyService->updateCompany($id, $request->companyFormDto());
-        } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], Response::HTTP_NOT_FOUND);
+        } catch (Exception) {
+            return response()->json(['error' => 'Company not found'], Response::HTTP_NOT_FOUND);
         }
 
         return response()->json(['success' => true]);
@@ -41,8 +41,8 @@ class CompanyController extends Controller
     {
         try {
             $this->companyService->deleteCompany($id);
-        } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], Response::HTTP_NOT_FOUND);
+        } catch (Exception) {
+            return response()->json(['error' => 'Company not found'], Response::HTTP_NOT_FOUND);
         }
 
         return response()->json(['success' => true]);
@@ -53,8 +53,8 @@ class CompanyController extends Controller
         try {
             $user = $this->companyService->getCompany($id);
             return response()->json($user);
-        } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], Response::HTTP_NOT_FOUND);
+        } catch (Exception) {
+            return response()->json(['error' => 'Company not found'], Response::HTTP_NOT_FOUND);
         }
     }
 
@@ -62,8 +62,8 @@ class CompanyController extends Controller
     {
         try {
             $rating = $this->companyService->getCompanyRating($companyId);
-        } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], Response::HTTP_NOT_FOUND);
+        } catch (Exception) {
+            return response()->json(['error' => 'Company not found'], Response::HTTP_NOT_FOUND);
         }
 
         return response()->json(['rating' => $rating]);

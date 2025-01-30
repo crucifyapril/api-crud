@@ -19,8 +19,8 @@ class CommentController extends Controller
     {
         try {
             $this->commentService->createComment($request->commentFormDto());
-        } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], Response::HTTP_BAD_REQUEST);
+        } catch (Exception) {
+            return response()->json(['success' => false], Response::HTTP_BAD_REQUEST);
         }
 
         return response()->json(['success' => true], Response::HTTP_CREATED);
@@ -30,8 +30,8 @@ class CommentController extends Controller
     {
         try {
             $this->commentService->updateComment($id, $request->commentFormDto());
-        } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], Response::HTTP_NOT_FOUND);
+        } catch (Exception) {
+            return response()->json(['error' => 'Comment not found'], Response::HTTP_NOT_FOUND);
         }
 
         return response()->json(['success' => true]);
@@ -41,8 +41,8 @@ class CommentController extends Controller
     {
         try {
             $this->commentService->deleteComment($id);
-        } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], Response::HTTP_NOT_FOUND);
+        } catch (Exception) {
+            return response()->json(['error' => 'Comment not found'], Response::HTTP_NOT_FOUND);
         }
 
         return response()->json(['success' => true]);
@@ -52,8 +52,8 @@ class CommentController extends Controller
     {
         try {
             $comment = $this->commentService->getComment($id);
-        } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], Response::HTTP_NOT_FOUND);
+        } catch (Exception) {
+            return response()->json(['error' => 'Comment not found'], Response::HTTP_NOT_FOUND);
         }
 
         return response()->json($comment);
@@ -63,8 +63,8 @@ class CommentController extends Controller
     {
         try {
             $comments = $this->commentService->getCommentsByCompanyId($companyId);
-        } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()], Response::HTTP_NOT_FOUND);
+        } catch (Exception) {
+            return response()->json(['error' => 'Comments not found'], Response::HTTP_NOT_FOUND);
         }
 
         return response()->json($comments);
